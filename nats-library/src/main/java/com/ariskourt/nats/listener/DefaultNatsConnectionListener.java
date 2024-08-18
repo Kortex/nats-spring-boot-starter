@@ -5,10 +5,19 @@ import io.nats.client.ConnectionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Default implementation of the ConnectionListener interface for handling NATS connection events.
+ */
 public class DefaultNatsConnectionListener implements ConnectionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultNatsConnectionListener.class);
 
+    /**
+     * Handles connection events from the NATS server.
+     *
+     * @param conn the NATS connection
+     * @param type the type of connection event
+     */
     @Override
     public void connectionEvent(Connection conn, Events type) {
         switch (type) {
