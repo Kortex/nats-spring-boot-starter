@@ -117,6 +117,7 @@ public class Nats {
             if (drained) {
                 LOGGER.info("Successfully drained NATS connection before closing...");
             }
+            closeDispatchers();
             connection.close();
             LOGGER.info("NATS connection has been closed successfully");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -160,6 +161,17 @@ public class Nats {
         } catch (JetStreamApiException | IOException e) {
             throw new NatsException(String.format("Subscribing push consumer with name %s to NATS failed", getConsumerName(configuration)), e);
         }
+    }
+
+    /**
+     * Closes all registered dispatchers.
+     */
+    protected void closeDispatchers() {
+        dispatchers.forEach((name, dispatcher) -> {
+            LOGGER.info("Closing dispatcher for consumer with name {}", name);
+            connection.closeDispatcher(dispatcher);
+        });
+        dispatchers.clear();
     }
 
     /**
