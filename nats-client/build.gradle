@@ -14,8 +14,8 @@ publishing {
     publications {
         mavenPublication(MavenPublication) {
             from components.java
-            groupId 'com.ariskourt'
-            artifactId 'nats-library'
+            groupId 'com.ariskourt.cloud'
+            artifactId 'nats-client'
             version project.version
         }
     }
