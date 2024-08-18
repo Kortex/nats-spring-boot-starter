@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.concurrent.ExecutorService;
 
+/**
+ * Auto-configuration class for setting up NATS connections and related properties.
+ */
 @AutoConfiguration
 @ConditionalOnClass(com.ariskourt.nats.Nats.class)
 @EnableConfigurationProperties(NatsProperties.class)
@@ -25,16 +28,32 @@ public class NatsConfiguration {
         this.natsExecutorService = natsExecutorService;
     }
 
+    /**
+     * Constructor for creating an instance of NatsConfiguration.
+     *
+     * @param properties the properties for configuring the NATS connection
+     */
     public NatsConfiguration(NatsProperties properties) {
         this.properties = properties;
     }
 
+    /**
+     * Creates a NATS bean if one is not already present in the context.
+     *
+     * @return a new instance of Nats
+     */
     @Bean(name = "nats")
     @ConditionalOnMissingBean
     public Nats nats() {
         return new Nats(configuration());
     }
 
+    /**
+     * Creates the NATS connection configuration based on the provided properties.
+     *
+     * @return the NATS connection configuration
+     * @throws NatsConfigurationException if any required property is missing
+     */
     private NatsConnectionConfiguration configuration() {
         var configuration = new NatsConnectionConfiguration();
         if (properties.urls() == null) {
