@@ -1,0 +1,21 @@
+dependencies {
+
+    api libs.jnats
+    implementation libs.commons.lang3
+    implementation libs.slf4j.api
+
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            groupId 'com.ariskourt'
+            artifactId 'nats-library'
+            version project.version
+        }
+    }
+}

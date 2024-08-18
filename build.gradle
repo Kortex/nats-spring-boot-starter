@@ -1,0 +1,52 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.springframework.boot' version '3.3.2' apply false
+}
+
+allprojects {
+
+    group 'com.ariskourt'
+    version '1.0.0'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+}
+
+subprojects {
+
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'io.spring.dependency-management'
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
+    tasks.register('sourcesJar', Jar) {
+        archiveClassifier.set('sources')
+        from sourceSets.main.allSource
+        dependsOn('classes')
+    }
+
+    tasks.register('javadocJar', Jar) {
+        archiveClassifier.set('javadoc')
+        from javadoc
+        dependsOn('javadoc')
+    }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+}
