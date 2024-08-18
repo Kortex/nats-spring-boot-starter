@@ -6,8 +6,8 @@ plugins {
 
 allprojects {
 
-    group 'com.ariskourt'
-    version '1.0.0'
+    group "$group"
+    version "$version"
 
     repositories {
         mavenLocal()
