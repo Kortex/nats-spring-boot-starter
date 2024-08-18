@@ -29,7 +29,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: maven
+          cache: gradle
         id: setup_jdk
       # Setup Gradle
       - name: Setup Gradle
