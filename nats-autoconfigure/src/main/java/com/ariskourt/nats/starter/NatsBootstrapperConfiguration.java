@@ -1,6 +1,6 @@
 package com.ariskourt.nats.starter;
 
-import com.ariskourt.nats.Nats;
+import com.ariskourt.nats.NatsClient;
 import com.ariskourt.nats.configuration.ConsumerConfiguration;
 import com.ariskourt.nats.configuration.NatsConsumerConfiguration;
 import com.ariskourt.nats.configuration.NatsPushSubscriberConfiguration;
@@ -22,17 +22,17 @@ public class NatsBootstrapperConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NatsBootstrapperConfiguration.class);
 
-    private final Nats nats;
+    private final NatsClient natsClient;
     private final Set<NatsHandler<?>> handlers;
 
     /**
      * Constructor for creating an instance of NatsBootstrapperConfiguration.
      *
-     * @param nats The NATS instance
+     * @param natsClient The NATS client
      * @param handlers A set of NATS handlers
      */
-    public NatsBootstrapperConfiguration(Nats nats, Set<NatsHandler<?>> handlers) {
-        this.nats = nats;
+    public NatsBootstrapperConfiguration(NatsClient natsClient, Set<NatsHandler<?>> handlers) {
+        this.natsClient = natsClient;
         this.handlers = handlers;
     }
 
@@ -41,7 +41,7 @@ public class NatsBootstrapperConfiguration {
      */
     @PostConstruct
     public void connect() {
-        nats.connect();
+        natsClient.connect();
         registerHandlers();
     }
 
@@ -50,7 +50,7 @@ public class NatsBootstrapperConfiguration {
      */
     @PreDestroy
     public void disconnect() {
-        nats.disconnect();
+        natsClient.disconnect();
     }
 
     /**
@@ -80,7 +80,7 @@ public class NatsBootstrapperConfiguration {
                                     pushBuilder.setDeliverSubject(handler.deliverSubject());
                                 }).build()
                         )).build();
-                nats.subscribePushConsumer(configuration, handler);
+                natsClient.subscribePushConsumer(configuration, handler);
             });
         }
     }

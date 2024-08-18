@@ -1,34 +1,12 @@
 dependencies {
 
-    implementation project(":nats-library")
-    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure-processor:3.3.2'
-    implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
+    implementation project(":nats-client")
+    annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure-processor'
+    implementation 'org.springframework.boot:spring-boot-starter'
     implementation libs.commons.collections4
     implementation libs.slf4j.api
 
     testImplementation libs.junit.jupiter
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-}
-
-publishing {
-    publications {
-        mavenPublication(MavenPublication) {
-            from components.java
-            groupId 'com.ariskourt'
-            artifactId 'nats-spring-boot-autoconfigure'
-            version project.version
-        }
-    }
-
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/Kortex/nats-spring-boot-starter"
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
 }

@@ -1,4 +1,4 @@
 rootProject.name = 'nats-spring-boot-starter'
-include('nats-library')
+include('nats-client')
 include('nats-autoconfigure')
 include('nats-starter')

@@ -22,9 +22,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * The Nats class provides methods to connect, disconnect, and subscribe to NATS server.
  */
-public class Nats {
+public class NatsClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Nats.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NatsClient.class);
 
     protected final ErrorListener errorListener;
     protected final ConnectionListener connectionListener;
@@ -54,22 +54,22 @@ public class Nats {
     }
 
     /**
-     * Constructor that creates a new instance of the {@link Nats} object using the provided configuration. This
+     * Constructor that creates a new instance of the {@link NatsClient} object using the provided configuration. This
      * @param configuration The configuration that will be used to create the connection to the NATS server
      */
-    public Nats(NatsConnectionConfiguration configuration) {
+    public NatsClient(NatsConnectionConfiguration configuration) {
         this(configuration, null, null);
     }
 
     /**
-     * Constructor that creates a new instance of the {@link Nats} object using the provided configuration. This
+     * Constructor that creates a new instance of the {@link NatsClient} object using the provided configuration. This
      * constructor also allows for providing custom error and connection listeners that will be used to handle
      * errors and connection events respectively.
      * @param configuration The configuration that will be used to create the connection to the NATS server
      * @param errorListener The error listener that will be used to handle errors
      * @param connectionListener The connection listener that will be used to handle connection events
      */
-    public Nats(NatsConnectionConfiguration configuration, ErrorListener errorListener, ConnectionListener connectionListener) {
+    public NatsClient(NatsConnectionConfiguration configuration, ErrorListener errorListener, ConnectionListener connectionListener) {
         this.errorListener = errorListener == null ? new DefaultNatsErrorListener() : errorListener;
         this.connectionListener = connectionListener == null ? new DefaultNatsConnectionListener() : connectionListener;
         this.configuration = configuration;
@@ -80,9 +80,9 @@ public class Nats {
      * method will attempt to establish a connection to the NATS server using the provided configuration. In case the
      * connection process fails, the method will throw a {@link NatsException} with the underlying cause of the failure.
      *
-     * @return The current instance of the {@link Nats} object
+     * @return The current instance of the {@link NatsClient} object
      */
-    public Nats connect() {
+    public NatsClient connect() {
         try {
             LOGGER.info("Attempting to connect to NATS server using the following configuration {}", configuration);
             connection = io.nats.client.Nats.connect(createOptions());
@@ -104,7 +104,7 @@ public class Nats {
      *
      * @throws NatsException In case the process of shutting down the connection has failed
      */
-    public Nats disconnect() {
+    public NatsClient disconnect() {
         if (connection == null) {
             return this;
         }

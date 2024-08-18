@@ -1,6 +1,6 @@
 package com.ariskourt.nats.starter;
 
-import com.ariskourt.nats.Nats;
+import com.ariskourt.nats.NatsClient;
 import com.ariskourt.nats.configuration.NatsConnectionConfiguration;
 import com.ariskourt.nats.configuration.NatsConnectionConfigurationParameters;
 import com.ariskourt.nats.starter.exception.NatsConfigurationException;
@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
  * Auto-configuration class for setting up NATS connections and related properties.
  */
 @AutoConfiguration
-@ConditionalOnClass(com.ariskourt.nats.Nats.class)
+@ConditionalOnClass(NatsClient.class)
 @EnableConfigurationProperties(NatsProperties.class)
 public class NatsConfiguration {
 
@@ -44,8 +44,8 @@ public class NatsConfiguration {
      */
     @Bean(name = "nats")
     @ConditionalOnMissingBean
-    public Nats nats() {
-        return new Nats(configuration());
+    public NatsClient nats() {
+        return new NatsClient(configuration());
     }
 
     /**

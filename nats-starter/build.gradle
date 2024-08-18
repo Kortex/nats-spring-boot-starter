@@ -1,7 +1,7 @@
 dependencies {
-    api project(':nats-library')
+    api project(':nats-client')
     api project(':nats-autoconfigure')
-    implementation 'org.springframework.boot:spring-boot-starter:3.3.2'
+    implementation 'org.springframework.boot:spring-boot-starter'
 }
 
 publishing {
