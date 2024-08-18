@@ -5,12 +5,14 @@ import com.ariskourt.nats.configuration.ConsumerConfiguration;
 import com.ariskourt.nats.configuration.NatsConsumerConfiguration;
 import com.ariskourt.nats.configuration.NatsPushSubscriberConfiguration;
 import com.ariskourt.nats.handler.NatsHandler;
+import com.ariskourt.nats.starter.properties.NatsProperties;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.util.Set;
 
@@ -18,6 +20,7 @@ import java.util.Set;
  * Auto-configuration class for bootstrapping NATS connections and handlers.
  */
 @AutoConfiguration
+@EnableConfigurationProperties(NatsProperties.class)
 public class NatsBootstrapperConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NatsBootstrapperConfiguration.class);
