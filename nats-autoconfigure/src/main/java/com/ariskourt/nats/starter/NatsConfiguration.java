@@ -47,12 +47,14 @@ public class NatsConfiguration {
     }
 
     @Bean(name = "natsConnection")
+    @ConditionalOnMissingBean
     public Connection natsConnection() {
         return nats().getConnection();
     }
 
-    @Bean
-    public JetStream natJetStream() {
+    @Bean(name = "natsJetStream")
+    @ConditionalOnMissingBean
+    public JetStream natsJetStream() {
         return nats().getJetStream();
     }
 
