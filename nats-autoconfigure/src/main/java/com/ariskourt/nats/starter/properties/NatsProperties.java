@@ -14,11 +14,23 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @param traceConnection Whether to enable connection tracing.
  * @param drainAwaitSeconds The number of seconds to wait for draining connections.
  * @param useDispatcherWithExecutor Whether to use a dispatcher with an executor service.
+ * @param executor The configuration for the executor service.
  */
 @ConfigurationProperties(prefix = "nats")
-public record NatsProperties(String urls,
+public record NatsProperties(Boolean enabled,
+                             String urls,
                              Integer maxReconnects,
                              Boolean traceConnection,
                              Integer drainAwaitSeconds,
-                             Boolean useDispatcherWithExecutor) {
+                             Boolean useDispatcherWithExecutor,
+                             NatsExecutorConfiguration executor) {
+
+    /**
+     * Configuration for the executor service.
+     *
+     * @param poolSize The size of the thread pool.
+     * @param namingPrefix The prefix for naming threads.
+     */
+    public record NatsExecutorConfiguration(Integer poolSize, String namingPrefix) {}
+
 }

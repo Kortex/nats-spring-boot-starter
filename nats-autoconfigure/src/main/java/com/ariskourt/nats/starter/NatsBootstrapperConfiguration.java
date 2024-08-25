@@ -12,6 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.util.Set;
@@ -21,6 +22,7 @@ import java.util.Set;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(NatsProperties.class)
+@ConditionalOnProperty(prefix = "nats", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class NatsBootstrapperConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NatsBootstrapperConfiguration.class);

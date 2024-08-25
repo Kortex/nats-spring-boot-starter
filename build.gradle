@@ -5,7 +5,7 @@ plugins {
 }
 
 ext {
-    springBootVersion = '3.3.2'
+    springBootVersion = '3.3.3'
 }
 
 allprojects {

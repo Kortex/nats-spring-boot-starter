@@ -5,12 +5,49 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Configuration class for NATS connection settings.
  */
 public class NatsConnectionConfiguration extends Properties {
+
+    /**
+     * Default NATS server URL.
+     */
+    public static final String DEFAULT_NATS_URL               = "localhost:4222";
+
+    /**
+     * Default maximum number of reconnect attempts.
+     */
+    public static final String DEFAULT_MAX_RECONNECTS         = "-1";
+
+    /**
+     * Default number of seconds to wait for draining the connection before closing.
+     */
+    public static final String DEFAULT_DRAIN_AWAIT_SECONDS    = "10";
+
+    /**
+     * Default size of the executor pool.
+     */
+    public static final String DEFAULT_EXECUTOR_POOL_SIZE     = "10";
+
+    /**
+     * Default naming prefix for the executor.
+     */
+    public static final String DEFAULT_EXECUTOR_NAMING_PREFIX = "nats-";
+
+    /**
+     * Checks if NATS is enabled in the configuration.
+     *
+     * @return true if NATS is enabled, false otherwise
+     */
+    public boolean enabled() {
+        var enabled = getProperty(NatsConnectionConfigurationParameters.NATS_ENABLED);
+        if (StringUtils.isNotEmpty(enabled)) {
+            return Boolean.parseBoolean(enabled);
+        }
+        return false;
+    }
 
     /**
      * Retrieves the list of NATS server URLs from the configuration.
@@ -19,11 +56,11 @@ public class NatsConnectionConfiguration extends Properties {
      * @throws NatsException if no NATS server URLs are provided
      */
     public List<String> getServerUrls() {
-        var urls = getProperty(NatsConnectionConfigurationParameters.NATS_CONNECTION_URLS);
+        var urls = getProperty(NatsConnectionConfigurationParameters.NATS_URLS);
         if (StringUtils.isNotEmpty(urls)) {
             return List.of(urls.split(","));
         }
-        throw new NatsException("No NATS server URLs have been provided!");
+        return List.of(DEFAULT_NATS_URL);
     }
 
     /**
@@ -32,7 +69,7 @@ public class NatsConnectionConfiguration extends Properties {
      * @return the maximum number of reconnect attempts
      */
     public int getMaxReconnects() {
-        var maxReconnects = getProperty(NatsConnectionConfigurationParameters.NATS_CONNECTION_MAX_RECONNECTS, "-1");
+        var maxReconnects = getProperty(NatsConnectionConfigurationParameters.NATS_MAX_RECONNECTS, DEFAULT_MAX_RECONNECTS);
         return Integer.parseInt(maxReconnects);
     }
 
@@ -42,7 +79,7 @@ public class NatsConnectionConfiguration extends Properties {
      * @return true if connection tracing is enabled, false otherwise
      */
     public boolean traceConnection() {
-        var traceConnection = getProperty(NatsConnectionConfigurationParameters.NATS_CONNECTION_TRACE_CONNECTION);
+        var traceConnection = getProperty(NatsConnectionConfigurationParameters.NATS_TRACE_CONNECTION);
         if (StringUtils.isNotEmpty(traceConnection)) {
             return Boolean.parseBoolean(traceConnection);
         }
@@ -55,7 +92,7 @@ public class NatsConnectionConfiguration extends Properties {
      * @return the number of seconds to wait for draining the connection
      */
     public int getDrainAwaitSeconds() {
-        var drainAwaitSeconds = getProperty(NatsConnectionConfigurationParameters.NATS_CONNECTION_DRAIN_AWAIT_SECONDS, "10");
+        var drainAwaitSeconds = getProperty(NatsConnectionConfigurationParameters.NATS_DRAIN_AWAIT_SECONDS, DEFAULT_DRAIN_AWAIT_SECONDS);
         return Integer.parseInt(drainAwaitSeconds);
     }
 
@@ -65,7 +102,7 @@ public class NatsConnectionConfiguration extends Properties {
      * @return true if the dispatcher should use an executor service, false otherwise
      */
     public boolean useDispatcherWithExecutor() {
-        var useDispatcherWithExecutor = getProperty(NatsConnectionConfigurationParameters.NATS_CONNECTION_USE_DISPATCHER_WITH_EXECUTOR);
+        var useDispatcherWithExecutor = getProperty(NatsConnectionConfigurationParameters.NATS_USE_DISPATCHER_WITH_EXECUTOR);
         if (StringUtils.isNotEmpty(useDispatcherWithExecutor)) {
             return Boolean.parseBoolean(useDispatcherWithExecutor);
         }
@@ -73,12 +110,22 @@ public class NatsConnectionConfiguration extends Properties {
     }
 
     /**
-     * Retrieves the executor service from the configuration.
+     * Retrieves the size of the executor pool from the configuration.
      *
-     * @return the executor service
+     * @return the size of the executor pool
      */
-    public ExecutorService getExecutorService() {
-        return (ExecutorService) get(NatsConnectionConfigurationParameters.NATS_CONNECTION_EXECUTOR_SERVICE);
+    public int getExecutorPoolSize() {
+        var poolSize = getProperty(NatsConnectionConfigurationParameters.NATS_EXECUTOR_POOL_SIZE, DEFAULT_EXECUTOR_POOL_SIZE);
+        return Integer.parseInt(poolSize);
+    }
+
+    /**
+     * Retrieves the naming prefix for the executor from the configuration.
+     *
+     * @return the naming prefix for the executor
+     */
+    public String getExecutorNamingPrefix() {
+        return getProperty(NatsConnectionConfigurationParameters.NATS_EXECUTOR_NAMING_PREFIX, DEFAULT_EXECUTOR_NAMING_PREFIX);
     }
 
 }

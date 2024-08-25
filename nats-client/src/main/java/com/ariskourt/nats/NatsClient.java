@@ -15,9 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 /**
  * The Nats class provides methods to connect, disconnect, and subscribe to NATS server.
@@ -185,12 +183,11 @@ public class NatsClient {
                 .connectionListener(connectionListener)
                 .maxReconnects(configuration.getMaxReconnects());
 
-        if (configuration.getExecutorService() != null) {
-            optionsBuilder.executor(configuration.getExecutorService());
-        }
         if (configuration.useDispatcherWithExecutor()) {
             optionsBuilder.useDispatcherWithExecutor();
+            optionsBuilder.executor(natsExecutor());
         }
+
         if (configuration.traceConnection()) {
             optionsBuilder.traceConnection();
         }
@@ -253,6 +250,12 @@ public class NatsClient {
                 .memStorage(configuration.consumerConfiguration().memoryStorage())
                 .sampleFrequency(configuration.consumerConfiguration().sampleFrequency())
                 .build();
+    }
+
+    private ExecutorService natsExecutor() {
+        return Executors.newFixedThreadPool(configuration.getExecutorPoolSize(), Thread.ofVirtual()
+                .name(configuration.getExecutorNamingPrefix(), 0)
+                .factory());
     }
 
 }

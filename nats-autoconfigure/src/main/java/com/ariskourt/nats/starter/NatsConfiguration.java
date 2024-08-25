@@ -5,14 +5,15 @@ import com.ariskourt.nats.configuration.NatsConnectionConfiguration;
 import com.ariskourt.nats.configuration.NatsConnectionConfigurationParameters;
 import com.ariskourt.nats.starter.exception.NatsConfigurationException;
 import com.ariskourt.nats.starter.properties.NatsProperties;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.nats.client.Connection;
+import io.nats.client.JetStream;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * Auto-configuration class for setting up NATS connections and related properties.
@@ -20,13 +21,10 @@ import java.util.concurrent.ExecutorService;
 @AutoConfiguration
 @ConditionalOnClass(NatsClient.class)
 @EnableConfigurationProperties(NatsProperties.class)
+@ConditionalOnProperty(prefix = "nats", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class NatsConfiguration {
 
     private final NatsProperties properties;
-    private ExecutorService natsExecutorService;
-    public void setNatsExecutorService(@Autowired(required = false) ExecutorService natsExecutorService) {
-        this.natsExecutorService = natsExecutorService;
-    }
 
     /**
      * Constructor for creating an instance of NatsConfiguration.
@@ -48,6 +46,16 @@ public class NatsConfiguration {
         return new NatsClient(configuration());
     }
 
+    @Bean(name = "natsConnection")
+    public Connection natsConnection() {
+        return nats().getConnection();
+    }
+
+    @Bean
+    public JetStream natJetStream() {
+        return nats().getJetStream();
+    }
+
     /**
      * Creates the NATS connection configuration based on the provided properties.
      *
@@ -56,25 +64,32 @@ public class NatsConfiguration {
      */
     private NatsConnectionConfiguration configuration() {
         var configuration = new NatsConnectionConfiguration();
-        if (properties.urls() == null) {
-            throw new NatsConfigurationException("NATS connection URLs cannot be null!");
+        if (properties.enabled() != null) {
+            configuration.put(NatsConnectionConfigurationParameters.NATS_ENABLED, properties.enabled());
         }
-        configuration.put(NatsConnectionConfigurationParameters.NATS_CONNECTION_URLS, properties.urls());
-        if (properties.maxReconnects() == null) {
-            throw new NatsConfigurationException("NATS connection max reconnects cannot be null!");
+        if (properties.urls() != null) {
+            configuration.put(NatsConnectionConfigurationParameters.NATS_URLS, properties.urls());
         }
-        configuration.put(NatsConnectionConfigurationParameters.NATS_CONNECTION_MAX_RECONNECTS, properties.maxReconnects());
-        configuration.put(NatsConnectionConfigurationParameters.NATS_CONNECTION_TRACE_CONNECTION, properties.traceConnection() != null && properties.traceConnection());
-        if (properties.drainAwaitSeconds() == null) {
-            throw new NatsConfigurationException("NATS connection drain await seconds cannot be null!");
+        if (properties.maxReconnects() != null) {
+            configuration.put(NatsConnectionConfigurationParameters.NATS_MAX_RECONNECTS, properties.maxReconnects());
         }
-        configuration.put(NatsConnectionConfigurationParameters.NATS_CONNECTION_DRAIN_AWAIT_SECONDS, properties.drainAwaitSeconds());
-        configuration.put(NatsConnectionConfigurationParameters.NATS_CONNECTION_USE_DISPATCHER_WITH_EXECUTOR, properties.useDispatcherWithExecutor() != null && properties.useDispatcherWithExecutor());
-        if ((properties.useDispatcherWithExecutor() != null && properties.useDispatcherWithExecutor()) && natsExecutorService == null) {
-            throw new NatsConfigurationException("Cannot create a NATS connection with a dispatcher and executor service without providing an executor service!");
+        if (properties.traceConnection() != null) {
+            configuration.put(NatsConnectionConfigurationParameters.NATS_TRACE_CONNECTION, properties.traceConnection());
         }
-        if (natsExecutorService != null) {
-            configuration.put(NatsConnectionConfigurationParameters.NATS_CONNECTION_EXECUTOR_SERVICE, natsExecutorService);
+        if (properties.drainAwaitSeconds() != null) {
+            configuration.put(NatsConnectionConfigurationParameters.NATS_DRAIN_AWAIT_SECONDS, properties.drainAwaitSeconds());
+        }
+        configuration.put(NatsConnectionConfigurationParameters.NATS_USE_DISPATCHER_WITH_EXECUTOR, BooleanUtils.isTrue(properties.useDispatcherWithExecutor()));
+        if (BooleanUtils.isTrue(properties.useDispatcherWithExecutor())) {
+            var executor = properties.executor();
+            if (executor != null) {
+                if (executor.poolSize() != null) {
+                    configuration.put(NatsConnectionConfigurationParameters.NATS_EXECUTOR_POOL_SIZE, executor.poolSize());
+                }
+                if (executor.namingPrefix() != null) {
+                    configuration.put(NatsConnectionConfigurationParameters.NATS_EXECUTOR_NAMING_PREFIX, executor.namingPrefix());
+                }
+            }
         }
         return configuration;
     }
