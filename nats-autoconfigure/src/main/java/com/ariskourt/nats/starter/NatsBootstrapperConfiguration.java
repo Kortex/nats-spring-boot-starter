@@ -77,6 +77,7 @@ public class NatsBootstrapperConfiguration {
                                     consumerBuilder.setDurable(handler.durable());
                                     consumerBuilder.setFilterSubjects(handler.filterSubjects());
                                     consumerBuilder.setMaxDeliver(handler.maxDeliver());
+                                    consumerBuilder.setAckAwait(handler.ackWait());
                                 }).build())
                         ).with(builder -> builder.setPushSubscriberConfiguration(NatsPushSubscriberConfiguration.builder()
                                 .with(pushBuilder -> {

@@ -4,6 +4,7 @@ import io.nats.client.Message;
 import io.nats.client.MessageHandler;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -77,6 +78,16 @@ public interface NatsHandler<T extends NatsEvent> extends MessageHandler {
      * @return The name assigned to this handler/consumer
      */
     default String consumerName() {
+        return null;
+    }
+
+    /**
+     * The duration that the server will wait for an acknowledgment for any individual message once it has been delivered to a consumer.
+     * If an acknowledgment is not received in time, the message will be redelivered.
+     *
+     * @return The duration for which the message will be acknowledged
+     */
+    default Duration ackWait() {
         return null;
     }
 

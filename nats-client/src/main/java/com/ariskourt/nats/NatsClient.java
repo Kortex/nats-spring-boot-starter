@@ -143,7 +143,7 @@ public class NatsClient {
         }
 
         if (null == handler) {
-            throw new NatsException("lease provide a non-null message handler instance");
+            throw new NatsException("Please provide a non-null message handler instance");
         }
 
         try {
