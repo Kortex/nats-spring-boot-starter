@@ -1,6 +1,7 @@
 package com.ariskourt.nats.configuration;
 
 import com.ariskourt.nats.exception.NatsException;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -79,11 +80,8 @@ public class NatsConnectionConfiguration extends Properties {
      * @return true if connection tracing is enabled, false otherwise
      */
     public boolean traceConnection() {
-        var traceConnection = getProperty(NatsConnectionConfigurationParameters.NATS_TRACE_CONNECTION);
-        if (StringUtils.isNotEmpty(traceConnection)) {
-            return Boolean.parseBoolean(traceConnection);
-        }
-        return false;
+        var traceConnection = (Boolean) get(NatsConnectionConfigurationParameters.NATS_TRACE_CONNECTION);
+        return BooleanUtils.isTrue(traceConnection);
     }
 
     /**
@@ -102,11 +100,8 @@ public class NatsConnectionConfiguration extends Properties {
      * @return true if the dispatcher should use an executor service, false otherwise
      */
     public boolean useDispatcherWithExecutor() {
-        var useDispatcherWithExecutor = getProperty(NatsConnectionConfigurationParameters.NATS_USE_DISPATCHER_WITH_EXECUTOR);
-        if (StringUtils.isNotEmpty(useDispatcherWithExecutor)) {
-            return Boolean.parseBoolean(useDispatcherWithExecutor);
-        }
-        return false;
+        var useDispatcherWithExecutor = (Boolean) get(NatsConnectionConfigurationParameters.NATS_USE_DISPATCHER_WITH_EXECUTOR);
+        return BooleanUtils.isTrue(useDispatcherWithExecutor);
     }
 
     /**
